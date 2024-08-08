@@ -3,12 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enjoy the Silence</title>
+    <title>Cookies</title>
     <style>
         html, body {
             height: 100%;
             margin: 0;
-            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #cookie-popup {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 300px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1000;
+            text-align: center;
+        }
+        #cookie-popup p {
+            margin: 0 0 15px;
+            color: #333;
+        }
+        #cookie-popup button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        #accept-cookies {
+            background-color: #4CAF50;
+            color: white;
+        }
+        #accept-cookies:hover {
+            background-color: #45a049;
+        }
+        #decline-cookies {
+            background-color: #f44336;
+            color: white;
+        }
+        #decline-cookies:hover {
+            background-color: #e53935;
         }
         audio {
             position: absolute;
@@ -18,17 +61,23 @@
     </style>
 </head>
 <body>
+    <div id="cookie-popup">
+        <p>We use cookies to ensure you get the best experience on our website.</p>
+        <button id="accept-cookies">Accept Cookies</button>
+        <button id="decline-cookies">Decline Cookies</button>
+    </div>
+
     <audio id="rickroll" src="rickroll.mp3" loop></audio>
 
     <script>
-        window.addEventListener('DOMContentLoaded', (event) => {
+        function startRickroll() {
+            document.getElementById('cookie-popup').style.display = 'none';
             const audio = document.getElementById('rickroll');
-            audio.play().catch(error => {
-                document.body.addEventListener('click', () => {
-                    audio.play();
-                }, { once: true });
-            });
-        });
+            audio.play();
+        }
+
+        document.getElementById('accept-cookies').addEventListener('click', startRickroll);
+        document.getElementById('decline-cookies').addEventListener('click', startRickroll);
     </script>
 </body>
 </html>
