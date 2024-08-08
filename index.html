@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>my website</title>
+    <title>Enjoy the Silence</title>
     <style>
         html, body {
             height: 100%;
             margin: 0;
+            overflow: hidden;
         }
-        iframe {
-            border: 0;
-            width: 100%;
-            height: 100%;
+        audio {
+            position: absolute;
+            top: -1000px;
+            left: -1000px;
         }
     </style>
 </head>
 <body>
-    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&loop=1&playlist=dQw4w9WgXcQ" allow="autoplay" allowfullscreen></iframe>
+    <audio src="rickroll.mp3" autoplay loop></audio>
 </body>
 </html>
