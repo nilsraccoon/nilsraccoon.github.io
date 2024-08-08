@@ -18,6 +18,17 @@
     </style>
 </head>
 <body>
-    <audio src="rickroll.mp3" autoplay loop></audio>
+    <audio id="rickroll" src="rickroll.mp3" loop></audio>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const audio = document.getElementById('rickroll');
+            audio.play().catch(error => {
+                document.body.addEventListener('click', () => {
+                    audio.play();
+                }, { once: true });
+            });
+        });
+    </script>
 </body>
 </html>
