@@ -1,0 +1,121 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: white;
+    color: black;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #000;
+    color: #ddd;
+}
+
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    transition: filter 5s, background-color 5s;
+}
+
+#click-text {
+    font-weight: bold;
+    font-size: 3em;
+    cursor: pointer;
+    text-align: center;
+}
+
+#gif {
+    display: none;
+    height: 100vh;
+    width: auto;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+#gif.show {
+    display: block;
+    opacity: 1;
+}
+
+#gif img {
+    height: 100vh;
+    width: auto;
+    object-fit: contain;
+}
+
+.blur {
+    filter: blur(10px);
+}
+
+#cool-box {
+    background-color: #f0f0f0;
+    width: 30%;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    bottom: 50px;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    z-index: 1000;
+}
+
+body.dark-mode #cool-box {
+    background-color: #333;
+    color: white;
+}
+
+#cool-box.show {
+    opacity: 1;
+}
+
+#cool-box h1 {
+    font-size: 2.5em;
+}
+
+#cool-box button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode #cool-box button {
+    background-color: #0056b3;
+}
+
+#cool-box button:hover {
+    background-color: #0056b3;
+}
+
+/* Light/Dark mode switcher */
+#mode-switcher {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    display: none;
+    z-index: 2000; /* Ensures it stays on top */
+}
+
+body.dark-mode #mode-switcher {
+    background-color: #333;
+    color: white;
+}
