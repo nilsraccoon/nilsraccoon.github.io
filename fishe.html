@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishe Friday Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #2f3136;
+            color: #ffffff;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 36px;
+            margin: 20px 0;
+            background-color: #40444b;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .category {
+            margin: 20px 0;
+            font-size: 24px;
+            border-bottom: 2px solid #40444b;
+            padding-bottom: 10px;
+        }
+
+        .time-message {
+            font-size: 18px;
+            margin: 10px 0;
+            background-color: #40444b;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .timestamp {
+            color: #72767d;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .gif {
+            height: 100px;
+            position: absolute;
+        }
+
+        .fishe {
+            position: absolute;
+            left: 15vw;
+            top: 25px;
+            height: 100px;
+        }
+
+        .soda {
+            position: absolute;
+            right: 15vw;
+            top: 25px;
+            height: 100px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .gif {
+                height: 80px;
+            }
+
+            .gif-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <meta property="og:title" content="Fishe Friday Tracker">
+    <meta property="og:description"
+        content="Track the countdown to Fishe Friday and get updates on when it starts and ends across various time zones.">
+    <meta property="og:image" content="fishe.gif">
+    <meta property="og:url" content="https://raccoon.is-a.dev/fishe.html">
+    <meta property="og:type" content="website">
+</head>
+
+<body>
+    <h1>
+        <div class="gif-container">
+            <img src="fishe.gif" alt="Left GIF" class="gif fishe">
+            <span>Fishe Friday Tracker</span>
+            <img src="soda.gif" alt="Right GIF" class="gif soda">
+        </div>
+    </h1>
+    <div class="timer" id="timer">Loading timer...</div>
+    <div id="messages"></div>
+
+    <script>
+        const timezonesStandard = [
+            { offset: -12, countries: ['Baker Island'] },
+            { offset: -11, countries: ['American Samoa'] },
+            { offset: -10, countries: ['Hawaii', 'Tahiti'] },
+            { offset: -9, countries: ['Alaska'] },
+            { offset: -8, countries: ['Pacific Time (US & Canada)'] },
+            { offset: -7, countries: ['Mountain Time (US & Canada)'] },
+            { offset: -6, countries: ['Central Time (US & Canada)', 'Mexico City'] },
+            { offset: -5, countries: ['Eastern Time (US & Canada)', 'Bogota'] },
+            { offset: -4, countries: ['Atlantic Time (Canada)', 'Santiago'] },
+            { offset: -3, countries: ['Buenos Aires', 'Greenland'] },
+            { offset: -2, countries: ['South Georgia'] },
+            { offset: -1, countries: ['Azores', 'Cape Verde'] },
+            { offset: 0, countries: ['London', 'Dublin', 'Lisbon'] },
+            { offset: 1, countries: ['Berlin', 'Paris', 'Madrid', 'Rome'] },
+            { offset: 2, countries: ['Athens', 'Cairo', 'Jerusalem'] },
+            { offset: 3, countries: ['Moscow', 'Baghdad', 'Riyadh'] },
+            { offset: 4, countries: ['Dubai', 'Baku'] },
+            { offset: 5, countries: ['Karachi', 'Islamabad', 'Tashkent'] },
+            { offset: 6, countries: ['Dhaka', 'Almaty'] },
+            { offset: 7, countries: ['Bangkok', 'Jakarta'] },
+            { offset: 8, countries: ['Beijing', 'Singapore', 'Perth'] },
+            { offset: 9, countries: ['Tokyo', 'Seoul'] },
+            { offset: 10, countries: ['Sydney', 'Guam', 'Melbourne'] },
+            { offset: 11, countries: ['Solomon Islands', 'Magadan'] },
+            { offset: 12, countries: ['Fiji', 'Auckland'] },
+        ];
+
+        const timezonesDst = [
+            { offset: -11, countries: ['American Samoa'] },
+            { offset: -10, countries: ['Hawaii', 'Tahiti'] },
+            { offset: -8, countries: ['Alaska (DST)'] },
+            { offset: -7, countries: ['Pacific Daylight Time (US & Canada)'] },
+            { offset: -6, countries: ['Mountain Daylight Time (US & Canada)'] },
+            { offset: -5, countries: ['Central Daylight Time (US & Canada)'] },
+            { offset: -4, countries: ['Eastern Daylight Time (US & Canada)', 'Santiago'] },
+            { offset: -3, countries: ['Buenos Aires', 'Greenland'] },
+            { offset: -2, countries: ['South Georgia'] },
+            { offset: -1, countries: ['Azores (DST)'] },
+            { offset: 1, countries: ['London (DST)', 'Dublin', 'Lisbon'] },
+            { offset: 2, countries: ['Berlin (DST)', 'Paris (DST)', 'Madrid (DST)', 'Rome (DST)'] },
+            { offset: 3, countries: ['Athens (DST)', 'Cairo (DST)', 'Jerusalem (DST)'] },
+            { offset: 3, countries: ['Moscow', 'Baghdad', 'Riyadh'] },
+            { offset: 4, countries: ['Dubai', 'Baku'] },
+            { offset: 5, countries: ['Karachi', 'Islamabad', 'Tashkent'] },
+            { offset: 6, countries: ['Dhaka', 'Almaty'] },
+            { offset: 7, countries: ['Bangkok', 'Jakarta'] },
+            { offset: 8, countries: ['Beijing', 'Singapore', 'Perth'] },
+            { offset: 9, countries: ['Tokyo', 'Seoul'] },
+            { offset: 11, countries: ['Solomon Islands'] },
+            { offset: 13, countries: ['Fiji (DST)', 'Auckland (DST)'] },
+        ];
+
+        function isDst(date) {
+            const year = date.getFullYear();
+            const start = new Date(year, 2, 14);
+            const end = new Date(year, 10, 7);
+            start.setDate(start.getDate() - start.getDay() + 7);
+            end.setDate(end.getDate() - end.getDay());
+            return date >= start && date < end;
+        }
+
+        function getNextFriday(date, offset) {
+            const dayOfWeek = date.getUTCDay();
+            const daysUntilFriday = (5 - dayOfWeek + 7) % 7;
+            const nextFriday = new Date(date);
+            nextFriday.setUTCDate(date.getUTCDate() + daysUntilFriday);
+            nextFriday.setUTCHours(0 - offset, 0, 0, 0);
+            return nextFriday;
+        }
+
+        function getNextSaturday(date, offset) {
+            const dayOfWeek = date.getUTCDay();
+            const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+            const nextSaturday = new Date(date);
+            nextSaturday.setUTCDate(date.getUTCDate() + daysUntilSaturday);
+            nextSaturday.setUTCHours(0 - offset, 0, 0, 0);
+            return nextSaturday;
+        }
+
+        function calculateTimer() {
+            const now = new Date();
+            const timezones = isDst(now) ? timezonesDst : timezonesStandard;
+
+            let latestEnd = null;
+
+            timezones.forEach(timezone => {
+                const nextFriday = getNextFriday(now, timezone.offset);
+                const nextSaturday = new Date(nextFriday);
+                nextSaturday.setUTCDate(nextFriday.getUTCDate() + 1);
+                if (!latestEnd || nextSaturday > latestEnd) {
+                    latestEnd = nextSaturday;
+                }
+            });
+
+            const timeUntilEnd = latestEnd - now;
+
+            const formatTime = (milliseconds) => {
+                const totalSeconds = Math.floor(milliseconds / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                return `${hours}h ${minutes}m ${seconds}s`;
+            };
+
+            const timerElement = document.getElementById('timer');
+            if (now < latestEnd) {
+                timerElement.innerHTML = `Time until Fishe Friday ends: ${formatTime(timeUntilEnd)}`;
+            } else {
+                timerElement.innerHTML = `Fishe Friday has ended.`;
+            }
+        }
+
+        function displayFisheFridayMessages() {
+            const now = new Date();
+            const messageContainer = document.getElementById('messages');
+            messageContainer.innerHTML = '';
+
+            const timezones = isDst(now) ? timezonesDst : timezonesStandard;
+
+            const messages = timezones.map(timezone => {
+                const nextFriday = getNextFriday(now, timezone.offset);
+                const nextSaturday = getNextSaturday(now, timezone.offset);
+                return {
+                    nextFriday: nextFriday,
+                    nextSaturday: nextSaturday,
+                    message: `${timezone.countries.join(', ')}!`
+                };
+            });
+
+            const endedMessages = messages.filter(m => m.nextSaturday < now);
+            const happeningMessages = messages.filter(m => m.nextFriday <= now && m.nextSaturday > now);
+            const goingToStartMessages = messages.filter(m => m.nextFriday > now);
+
+            const createCategory = (title, messageList, action) => {
+                if (messageList.length > 0) {
+                    const categoryTitle = `<div class="category">${title}</div>`;
+                    const messageItems = messageList.map(({ nextFriday, message }) => {
+                        const timestamp = nextFriday.toLocaleString('en-US', { weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+                        return `<div class="time-message"><span class="timestamp">${timestamp}</span>${action} ${message}</div>`;
+                    }).join('');
+                    return categoryTitle + messageItems;
+                }
+                return '';
+            };
+
+            messageContainer.innerHTML += createCategory('Fishe Friday Already Ended', endedMessages, 'Fishe Friday has ended in');
+            messageContainer.innerHTML += createCategory('Fishe Friday Currently Happening', happeningMessages, 'Fishe Friday is currently happening in');
+            messageContainer.innerHTML += createCategory('Fishe Friday Going to Start', goingToStartMessages, 'Fishe Friday is going to start in');
+        }
+
+        function updateTimers() {
+            calculateTimer();
+            displayFisheFridayMessages();
+        }
+
+        updateTimers();
+        setInterval(updateTimers, 1000);
+    </script>
+
+</body>
+
+</html>
