@@ -2,12 +2,15 @@
 <html lang="en">
 
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fishe Friday Tracker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Manrope, Arial, sans-serif;
             text-align: center;
             padding: 20px;
             background-color: #2f3136;
@@ -15,13 +18,13 @@
         }
 
         h1 {
-            font-size: 48px;
-            margin-bottom: 50px;
+            font-size: 36px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
         .timer {
-            font-size: 36px;
+            font-size: 24px;
             margin: 20px 0;
             background-color: #40444b;
             padding: 15px;
@@ -30,13 +33,13 @@
 
         .category {
             margin: 20px 0;
-            font-size: 24px;
+            font-size: 20px;
             border-bottom: 2px solid #40444b;
             padding-bottom: 10px;
         }
 
         .time-message {
-            font-size: 18px;
+            font-size: 16px;
             margin: 10px 0;
             background-color: #40444b;
             padding: 10px;
@@ -50,35 +53,53 @@
         }
 
         .gif {
-            height: 100px;
-            position: absolute;
+            height: 80px;
+            margin: 10px;
         }
 
-        .fishe {
-            position: absolute;
-            left: 15vw;
-            top: 25px;
-            height: 100px;
+        .gif-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        .soda {
-            position: absolute;
-            right: 15vw;
-            top: 25px;
-            height: 100px;
+        .music-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #40444b;
+            color: #ffffff;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
         }
 
         @media (max-width: 600px) {
             h1 {
-                font-size: 36px;
+                font-size: 28px;
+            }
+
+            .timer {
+                font-size: 20px;
+            }
+
+            .category {
+                font-size: 18px;
+            }
+
+            .time-message {
+                font-size: 14px;
             }
 
             .gif {
-                height: 80px;
-            }
-
-            .gif-container {
-                flex-direction: column;
+                height: 60px;
             }
         }
     </style>
@@ -98,6 +119,7 @@
             <img src="soda.gif" alt="Right GIF" class="gif soda">
         </div>
     </h1>
+    <div id="music-toggle" class="music-toggle">🔇</div>
     <div class="timer" id="timer">Loading timer...</div>
     <div id="messages"></div>
 
@@ -186,17 +208,22 @@
             const now = new Date();
             const timezones = isDst(now) ? timezonesDst : timezonesStandard;
 
+            let earliestStart = null;
             let latestEnd = null;
 
             timezones.forEach(timezone => {
                 const nextFriday = getNextFriday(now, timezone.offset);
                 const nextSaturday = new Date(nextFriday);
                 nextSaturday.setUTCDate(nextFriday.getUTCDate() + 1);
+                if (!earliestStart || nextFriday < earliestStart) {
+                    earliestStart = nextFriday;
+                }
                 if (!latestEnd || nextSaturday > latestEnd) {
                     latestEnd = nextSaturday;
                 }
             });
 
+            const timeUntilStart = earliestStart - now;
             const timeUntilEnd = latestEnd - now;
 
             const formatTime = (milliseconds) => {
@@ -208,7 +235,9 @@
             };
 
             const timerElement = document.getElementById('timer');
-            if (now < latestEnd) {
+            if (now < earliestStart) {
+                timerElement.innerHTML = `Time until Fishe Friday starts: ${formatTime(timeUntilStart)}`;
+            } else if (now < latestEnd) {
                 timerElement.innerHTML = `Time until Fishe Friday ends: ${formatTime(timeUntilEnd)}`;
             } else {
                 timerElement.innerHTML = `Fishe Friday has ended.`;
@@ -248,9 +277,9 @@
                 return '';
             };
 
-            messageContainer.innerHTML += createCategory('Fishe Friday Already Ended', endedMessages, 'Fishe Friday has ended in');
-            messageContainer.innerHTML += createCategory('Fishe Friday Currently Happening', happeningMessages, 'Fishe Friday is currently happening in');
-            messageContainer.innerHTML += createCategory('Fishe Friday Going to Start', goingToStartMessages, 'Fishe Friday is going to start in');
+            messageContainer.innerHTML += createCategory('<em>Fishe Friday Already Ended</em>', endedMessages, 'Fishe Friday has ended in');
+            messageContainer.innerHTML += createCategory('<em>Fishe Friday Currently Happening</em>', happeningMessages, 'Fishe Friday is currently happening in');
+            messageContainer.innerHTML += createCategory('<em>Fishe Friday Going to Start</em>', goingToStartMessages, 'Fishe Friday is going to start in');
         }
 
         function updateTimers() {
@@ -262,6 +291,32 @@
         setInterval(updateTimers, 1000);
     </script>
 
+    <script>
+
+        const audioElement = document.createElement('audio');
+        
+
+        const musicToggle = document.getElementById('music-toggle');
+            let isPlaying = false;
+
+            musicToggle.addEventListener('click', () => {
+                if (isPlaying) {
+                    audioElement.pause();
+                    musicToggle.textContent = '🔇';
+                } else {
+                    audioElement.play().catch(e => console.error("Playback failed:", e));
+                    musicToggle.textContent = '🔊';
+                }
+                isPlaying = !isPlaying;
+            });
+
+            audioElement.src = 'https://mount.h3x.lol/radio.mp3';
+            audioElement.loop = true;
+
+    </script>
+
 </body>
 
 </html>
+
+
