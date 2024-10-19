@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            overflow: hidden;
+            background-image: url("https://hypixel.net/attachments/cave-halloween-1-png.3309895/");
+        }
+
+        .rotate {
+            animation: rotation 5s infinite linear;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(359deg);
+            }
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 5%;
+            width: 35%;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="https://cdn.discordapp.com/emojis/1160090942825562142.png" class="rotate center">
+    <audio src="funkytown.mp3" autoplay hidden></audio>
+</body>
+
+</html>
