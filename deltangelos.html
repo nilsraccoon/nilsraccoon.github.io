@@ -30,25 +30,27 @@
 
         .back {
             animation-delay: -2.25s;
-            background-image: url("angelos.png");
             background-color: #1abcff;
         }
 
         .right {
             animation-delay: -0.75s;
-            background-image: url("angelos.png");
             background-color: #00a2e6;
         }
 
         .left {
             animation-delay: -1.5s;
-            background-image: url("angelos.png");
             background-color: #0089c2;
         }
 
         .front {
-            background-image: url("angelos.png");
             background-color: #007eb3;
+        }
+
+        .file-picker {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
         }
 
         @keyframes spin {
@@ -82,9 +84,6 @@
                 transform: rotateY(360deg) rotateX(30deg);
             }
         }
-
-       
-
     </style>
 </head>
 
@@ -94,9 +93,24 @@
         <div class="side front"></div>
         <div class="side right"></div>
         <div class="side back"></div>
-
         <div class="shadow"></div>
     </div>
+    <input type="file" accept="image/*" class="file-picker" onchange="updateImage(this)">
+
+    <script>
+        function updateImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const sides = document.querySelectorAll('.side');
+                    sides.forEach(side => {
+                        side.style.backgroundImage = `url(${e.target.result})`;
+                    });
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 
 </html>
